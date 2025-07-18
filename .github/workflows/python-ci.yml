@@ -9,26 +9,26 @@ on:
 
 jobs:
   build-and-run-pytest:
-
     runs-on: ubuntu-latest
 
     steps:
-    # First step (unnamed here) is to checkout to the branch that triggered the event
-    - uses: actions/checkout@v3
+    # First step: checkout to the branch that triggered the event
+    - uses: actions/checkout@v4
 
-    # Second step: install python 3.8
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+    # Second step: install uv
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
       with:
-        python-version: "3.8"
-    # Third step: install python packages using poetry
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
+        version: "latest"
 
-    # Fourth step: run tests with Pytest
+    # Third step: set up Python (uv will handle this, but we can specify version)
+    - name: Set up Python
+      run: uv python install 3.12
+
+    # Fourth step: install dependencies with uv
+    - name: Install dependencies
+      run: uv sync
+
+    # Fifth step: run tests with pytest
     - name: Run tests
-      run: |
-        poetry run pytest
+      run: uv run pytest
